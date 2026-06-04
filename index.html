@@ -305,23 +305,59 @@
 </div>
 
 <script>
-const LOANS_KEY    = 'cdb_loans_v1';
-const EXPENSES_KEY = 'cdb_expenses_v1';
-const PAID_KEY     = 'cdb_paid_v1';
+const BIN_ID  = '6a210fe8f5f4af5e29b6301c';
+const API_KEY = '$2a$10$WoTPIpijWH7J6FVV1/wzC./fAj93jeRXGdlU2mV83jwfng148C2b2';
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-let loans    = JSON.parse(localStorage.getItem(LOANS_KEY)    || '[]');
-let expenses = JSON.parse(localStorage.getItem(EXPENSES_KEY) || '[]');
-let paidMap  = JSON.parse(localStorage.getItem(PAID_KEY)     || '{}');
+let loans    = [];
+let expenses = [];
+let paidMap  = {};
+let saving   = false;
 
 let editLoanId = null, editExpId = null;
 const now = new Date();
 let viewYear = now.getFullYear(), viewMonth = now.getMonth();
 
-function saveAll() {
-  localStorage.setItem(LOANS_KEY,    JSON.stringify(loans));
-  localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
-  localStorage.setItem(PAID_KEY,     JSON.stringify(paidMap));
+function setSyncStatus(text, color) {
+  const el = document.getElementById('syncStatus');
+  if (el) { el.textContent = text; el.style.color = color; }
 }
+
+async function loadData() {
+  setSyncStatus('⏳ Загрузка...', '#f59e0b');
+  try {
+    const res = await fetch(BIN_URL, { headers: { 'X-Master-Key': API_KEY } });
+    const json = await res.json();
+    const d = json.record;
+    loans    = d.loans    || [];
+    expenses = d.expenses || [];
+    paidMap  = d.paid     || {};
+    setSyncStatus('✅ Синхронизировано', '#10b981');
+    render();
+  } catch(e) {
+    setSyncStatus('❌ Ошибка загрузки', '#ef4444');
+  }
+}
+
+async function saveAll() {
+  if (saving) return;
+  saving = true;
+  setSyncStatus('💾 Сохранение...', '#6366f1');
+  try {
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: { 'X-Master-Key': API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loans, expenses, paid: paidMap })
+    });
+    setSyncStatus('✅ Сохранено', '#10b981');
+  } catch(e) {
+    setSyncStatus('❌ Ошибка сохранения', '#ef4444');
+  }
+  saving = false;
+}
+
+// Автосинхронизация каждые 30 секунд
+setInterval(loadData, 30000);
 
 function pKey(id, y, m) { return `${id}-${y}-${String(m+1).padStart(2,'0')}`; }
 function isPaid(id, y, m) { return !!paidMap[pKey(id,y,m)]; }
