@@ -586,8 +586,8 @@ function renderMonthList() {
 
   function expRow(it) {
     const col = it.color||'#f43f5e';
-    return `<li>
-      <span class="pay-dot" style="background:${col}"></span>
+    return `<li class="${it.paid?'is-paid':''}">
+      <span class="pay-dot" style="background:${it.paid?'#10b981':col}"></span>
       <span style="font-size:.95rem;">${it.emoji||'🧾'}</span>
       <span class="pay-name-wrap">
         <span style="font-weight:700;color:#1e1e3a;">${it.name}</span>
