@@ -534,16 +534,18 @@ function renderCalendar() {
     let chips='';
     if (!isOther) {
       for (const p of (lMap[num]||[])) {
-        const paid = isPaid(p.paidKey,'','');
-        const col  = p.color||'#6366f1';
+        const paid     = isPaid(p.paidKey,'','');
+        const col      = p.color||'#6366f1';
+        const shortName = p.bank || p.name;
         chips+=`<span class="pay-chip${paid?' paid':''}" style="background:${hex2rgba(col,.13)};color:${col};"
-          onclick="togglePaid('${p.paidKey}')" title="${p.name}: ${fmt(p.payAmount)}">${p.emoji||'💼'} ${p.name}</span>`;
+          onclick="togglePaid('${p.paidKey}')" title="${p.name}: ${fmt(p.payAmount)}">${p.emoji||'💼'} ${shortName}</span>`;
       }
       for (const e of (eMap[num]||[])) {
-        const paid = isPaid(pKey(e.id,viewYear,viewMonth),'','');
+        const paidKey2 = e.date ? `${e.id}-${e.date}` : pKey(e.id,viewYear,viewMonth);
+        const paid = isPaid(paidKey2,'','');
         const col  = e.color||'#f43f5e';
         chips+=`<span class="pay-chip expense-chip${paid?' paid':''}" style="background:${hex2rgba(col,.1)};color:${col};border-color:${hex2rgba(col,.4)};"
-          onclick="toggleExpPaid('${e.id}',${viewYear},${viewMonth})" title="${e.name}: ${fmt(e.amount)}">${e.emoji||'🧾'} ${e.name}</span>`;
+          onclick="${e.date?`togglePaid('${e.id}-${e.date}')`:`toggleExpPaid('${e.id}',${viewYear},${viewMonth})`}" title="${e.name}: ${fmt(e.amount)}">${e.emoji||'🧾'} ${e.name}</span>`;
       }
     }
     html+=`<div class="${cls}"><div class="day-num">${num}</div>${chips}</div>`;
