@@ -362,10 +362,15 @@ async function saveAll() {
 // Автосинхронизация каждые 30 секунд
 setInterval(loadData, 30000);
 
+// Для кредитов ключ = "loanId-YYYY-MM-DD", для расходов = "expId-YYYY-MM"
 function pKey(id, y, m) { return `${id}-${y}-${String(m+1).padStart(2,'0')}`; }
-function isPaid(id, y, m) { return !!paidMap[pKey(id,y,m)]; }
-function togglePaid(id, y, m) {
-  const k = pKey(id,y,m);
+function isPaid(key, _y, _m) { return !!paidMap[key]; }
+function togglePaid(key) {
+  paidMap[key] ? delete paidMap[key] : (paidMap[key] = true);
+  saveAll(); render();
+}
+function toggleExpPaid(id, y, m) {
+  const k = pKey(id, y, m);
   paidMap[k] ? delete paidMap[k] : (paidMap[k] = true);
   saveAll(); render();
 }
