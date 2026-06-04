@@ -615,7 +615,7 @@ function renderLoansList() {
   sub.textContent = `${loans.length} ${plural(loans.length,'кредит','кредита','кредитов')}`;
 
   const totalBal = loans.reduce((s,c)=>s+Number(c.balance),0);
-  const totalMon = loans.filter(c=>c.payment).reduce((s,c)=>s+Number(c.payment),0);
+  const totalMon = allLoanPaymentsInMonth(viewYear, viewMonth).reduce((s,p)=>s+p.payAmount,0);
 
   el.innerHTML = loans.map(c => {
     const col = c.color||'#6366f1';
