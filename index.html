@@ -170,24 +170,25 @@
 
   <div class="cards" id="cards"></div>
 
+  <!-- Календарь — полная ширина -->
+  <div class="section" style="margin-bottom:20px;">
+    <div class="section-head">
+      <div>
+        <div class="section-title">📅 Платёжный календарь</div>
+        <div class="section-sub">Кредиты и расходы на месяц</div>
+      </div>
+      <div class="month-nav">
+        <button onclick="changeMonth(-1)">‹</button>
+        <span class="month-label" id="monthLabel"></span>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
   <div class="main-grid">
     <!-- LEFT -->
     <div>
-      <div class="section">
-        <div class="section-head">
-          <div>
-            <div class="section-title">📅 Платёжный календарь</div>
-            <div class="section-sub">Кредиты и расходы на месяц</div>
-          </div>
-          <div class="month-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <span class="month-label" id="monthLabel"></span>
-            <button onclick="changeMonth(1)">›</button>
-          </div>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
-
       <div class="section">
         <div class="section-head">
           <div>
