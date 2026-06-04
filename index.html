@@ -586,9 +586,17 @@ function renderLoansList() {
       </div>`;
   }).join('');
 
+  const totalOrig = loans.reduce((s,c)=>s+Number(c.totalAmount||c.balance),0);
   tb.innerHTML = `<div class="total-bar loans">
-    <div><div class="total-bar-label">ИТОГО ОСТАТОК</div><div class="total-bar-value">${fmt(totalBal)}</div></div>
-    <div class="total-bar-right"><div class="total-bar-label">ПЛАТЁЖ В МЕС</div><div class="total-bar-value">${fmt(totalMon)}</div></div>
+    <div>
+      <div class="total-bar-label">ОСТАТОК ДОЛГА</div>
+      <div class="total-bar-value">${fmt(totalBal)}</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-top:2px;">из ${fmt(totalOrig)}</div>
+    </div>
+    <div class="total-bar-right">
+      <div class="total-bar-label">ПЛАТЁЖ В МЕС</div>
+      <div class="total-bar-value">${fmt(totalMon)}</div>
+    </div>
   </div>`;
 }
 
