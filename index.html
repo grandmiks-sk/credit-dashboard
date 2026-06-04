@@ -624,7 +624,7 @@ function renderMonthList() {
         <span class="pay-date-lbl">${dayNum} числа</span>
       </span>
       <span class="pay-amt" style="color:${col}">${fmt(it.payAmount)}</span>
-      <button class="pay-toggle" onclick="togglePaid('${it.paidKey}')">${it.paid?'↩️':'✅'}</button>
+      <button class="pay-toggle ${it.paid?'paid-btn':''}" onclick="togglePaid('${it.paidKey}')">${it.paid?'↩ Отменить':'✓ Оплачено'}</button>
     </li>`;
   }
 
