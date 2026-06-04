@@ -62,10 +62,12 @@
   .cal-day.today { background: #eef0ff; outline: 2px solid #6366f1; }
   .cal-day .day-num { font-size: 0.68rem; color: #a0a0c0; font-weight: 600; margin-bottom: 3px; }
   .cal-day.today .day-num { color: #6366f1; font-weight: 800; }
-  .pay-chip { font-size: 0.58rem; border-radius: 5px; padding: 2px 4px; margin-bottom: 2px; display: block; cursor: pointer; transition: opacity .15s; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pay-chip { font-size: 0.58rem; border-radius: 5px; padding: 2px 4px; margin-bottom: 2px; display: block; cursor: pointer; transition: all .15s; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pay-chip:hover { opacity: .75; }
-  .pay-chip.paid { opacity: .45; text-decoration: line-through; }
+  .pay-chip.paid { background: #d1fae5 !important; color: #065f46 !important; text-decoration: none; opacity: 1; }
+  .pay-chip.paid::before { content: '✓ '; font-weight: 800; }
   .pay-chip.expense-chip { border-style: dashed; border-width: 1px; }
+  .pay-chip.expense-chip.paid { background: #d1fae5 !important; color: #065f46 !important; border-color: #6ee7b7 !important; }
 
   /* Monthly list */
   .pay-list { list-style: none; }
