@@ -72,8 +72,10 @@
   /* Monthly list */
   .pay-list { list-style: none; }
   .list-divider { font-size: 0.7rem; font-weight: 700; color: #a0a0c0; text-transform: uppercase; letter-spacing: .05em; padding: 10px 0 4px; }
-  .pay-list li { display: flex; align-items: center; gap: 7px; padding: 8px 0; border-bottom: 1px solid #f0f0f8; font-size: 0.82rem; }
-  .pay-list li:last-child { border-bottom: none; }
+  .pay-list li { display: flex; align-items: center; gap: 7px; padding: 8px 10px; border-radius: 10px; margin-bottom: 3px; font-size: 0.82rem; background: #fafafe; border: 1.5px solid #f0f0f8; }
+  .pay-list li.is-paid { background: #f0fdf4; border-color: #bbf7d0; }
+  .pay-list li.is-paid .pay-amt { color: #059669 !important; }
+  .pay-list li.is-paid .pay-name-wrap { opacity: .75; }
   .pay-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .pay-name-wrap { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
   .pay-date-lbl { font-size: 0.68rem; color: #a0a0c0; }
