@@ -389,6 +389,8 @@ function render() {
 /* ── CARDS ── */
 function renderCards() {
   const totalDebt     = loans.reduce((s,c)=>s+Number(c.balance),0);
+  const totalOriginal = loans.reduce((s,c)=>s+Number(c.totalAmount||c.balance),0);
+  const overallPct    = totalOriginal > 0 ? Math.round((1 - totalDebt/totalOriginal)*100) : 0;
   const loanItems     = loans.filter(c=>c.day&&c.payment);
   const totalLoans    = loanItems.reduce((s,c)=>s+Number(c.payment),0);
   const expItems      = expenses.filter(e=>e.amount);
@@ -402,9 +404,9 @@ function renderCards() {
   document.getElementById('cards').innerHTML = `
     <div class="card c1">
       <div class="card-emoji">💰</div>
-      <div class="card-label">Общий долг</div>
+      <div class="card-label">Остаток долга</div>
       <div class="card-value">${fmt(totalDebt)}</div>
-      <div class="card-sub">${loans.length} ${plural(loans.length,'кредит','кредита','кредитов')}</div>
+      <div class="card-sub">из ${fmt(totalOriginal)} · погашено ${overallPct}%</div>
     </div>
     <div class="card c2">
       <div class="card-emoji">💳</div>
