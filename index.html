@@ -568,17 +568,29 @@ function renderMonthList() {
     return {...p, dt, paid, overdue, soon, daysUntil};
   });
 
-  // Расходы — по дню месяца
+  // Расходы — ежемесячные и одноразовые
   const dim = new Date(viewYear, viewMonth+1, 0).getDate();
-  const eItems = expenses.filter(e=>e.amount).map(e => {
-    const d  = Math.min(Number(e.day||1), dim);
-    const dt = new Date(viewYear, viewMonth, d);
-    const k  = pKey(e.id, viewYear, viewMonth);
+  const eItems = expenses.filter(e => {
+    if (!e.amount) return false;
+    if (e.date) {
+      const ed = new Date(e.date);
+      return ed.getFullYear()===viewYear && ed.getMonth()===viewMonth;
+    }
+    return !!e.day;
+  }).map(e => {
+    let d, dt;
+    if (e.date) {
+      dt = new Date(e.date); d = dt.getDate();
+    } else {
+      d = Math.min(Number(e.day), dim); dt = new Date(viewYear, viewMonth, d);
+    }
+    const k  = e.date ? `${e.id}-${e.date}` : pKey(e.id, viewYear, viewMonth);
     const paid = isPaid(k,'','');
     const overdue = !paid && dt < today;
     const daysUntil = Math.ceil((dt - today) / 86400000);
     const soon = !paid && daysUntil >= 0 && daysUntil <= 5;
-    return {...e, dt, d, paid, overdue, soon, daysUntil, paidKey: k, payAmount: Number(e.amount)};
+    const isOnetime = !!e.date;
+    return {...e, dt, d, paid, overdue, soon, daysUntil, paidKey: k, payAmount: Number(e.amount), isOnetime};
   }).sort((a,b)=>a.d-b.d);
 
   const all = [...lItems, ...eItems];
