@@ -694,7 +694,7 @@ function renderExpList() {
   }
 
   // Combined bar
-  const totalLoans = loans.filter(c=>c.payment).reduce((s,c)=>s+Number(c.payment),0);
+  const totalLoans = allLoanPaymentsInMonth(viewYear, viewMonth).reduce((s,p)=>s+p.payAmount,0);
   const totalExp   = expenses.reduce((s,e)=>s+Number(e.amount),0);
   if (totalLoans||totalExp) {
     cb.innerHTML = `<div class="total-bar combined" style="margin-top:14px;">
