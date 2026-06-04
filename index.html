@@ -768,6 +768,28 @@ function saveLoan() {
 function deleteLoan(id) { if(!confirm('Удалить кредит?')) return; loans=loans.filter(c=>c.id!==id); saveAll(); render(); }
 
 /* ── EXPENSE MODAL ── */
+let currentExpType = 'recurring';
+
+function setExpType(type) {
+  currentExpType = type;
+  const rBtn = document.getElementById('typeRecurring');
+  const oBtn = document.getElementById('typeOnetime');
+  const dayG = document.getElementById('eDayGroup');
+  const dateG = document.getElementById('eDateGroup');
+  if (type === 'recurring') {
+    rBtn.style.cssText = 'flex:1;padding:9px;border-radius:10px;border:2px solid #6366f1;background:#f0f2ff;color:#6366f1;font-weight:700;cursor:pointer;font-size:0.82rem;';
+    oBtn.style.cssText = 'flex:1;padding:9px;border-radius:10px;border:2px solid #e8e8f5;background:white;color:#a0a0c0;font-weight:700;cursor:pointer;font-size:0.82rem;';
+    dayG.classList.remove('hidden'); dateG.classList.add('hidden');
+  } else {
+    oBtn.style.cssText = 'flex:1;padding:9px;border-radius:10px;border:2px solid #f43f5e;background:#fff0f5;color:#e11d48;font-weight:700;cursor:pointer;font-size:0.82rem;';
+    rBtn.style.cssText = 'flex:1;padding:9px;border-radius:10px;border:2px solid #e8e8f5;background:white;color:#a0a0c0;font-weight:700;cursor:pointer;font-size:0.82rem;';
+    dayG.classList.add('hidden'); dateG.classList.remove('hidden');
+    if (!document.getElementById('eDate').value) {
+      document.getElementById('eDate').value = new Date().toISOString().slice(0,10);
+    }
+  }
+}
+
 function openExpModal(id) {
   editExpId = id||null;
   document.getElementById('expModalTitle').textContent = id ? 'Редактировать расход' : 'Добавить расход';
@@ -775,13 +797,20 @@ function openExpModal(id) {
     const e = expenses.find(x=>x.id===id);
     document.getElementById('eName').value   = e.name;
     document.getElementById('eAmount').value = e.amount;
-    document.getElementById('eDay').value    = e.day||'';
     document.getElementById('eEmoji').value  = e.emoji||'📦';
     document.getElementById('eColor').value  = e.color||'#f43f5e';
+    if (e.date) {
+      setExpType('onetime');
+      document.getElementById('eDate').value = e.date;
+    } else {
+      setExpType('recurring');
+      document.getElementById('eDay').value = e.day||'';
+    }
   } else {
-    ['eName','eAmount','eDay'].forEach(f=>document.getElementById(f).value='');
+    ['eName','eAmount','eDay','eDate'].forEach(f=>document.getElementById(f).value='');
     document.getElementById('eEmoji').value='📦';
     document.getElementById('eColor').value='#f43f5e';
+    setExpType('recurring');
   }
   document.getElementById('expModal').classList.remove('hidden');
 }
@@ -793,10 +822,15 @@ function saveExp() {
   if (!name||isNaN(amount)) { alert('Укажите название и сумму'); return; }
   const data = {
     name, amount,
-    day:   parseInt(document.getElementById('eDay').value)||null,
     emoji: document.getElementById('eEmoji').value,
     color: document.getElementById('eColor').value,
+    day:   null, date: null,
   };
+  if (currentExpType === 'recurring') {
+    data.day = parseInt(document.getElementById('eDay').value)||null;
+  } else {
+    data.date = document.getElementById('eDate').value || null;
+  }
   if (editExpId) { const i=expenses.findIndex(e=>e.id===editExpId); expenses[i]={...expenses[i],...data}; }
   else { data.id=uid(); expenses.push(data); }
   saveAll(); closeExpModal(); render();
