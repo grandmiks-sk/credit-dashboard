@@ -637,8 +637,11 @@ function renderMonthList() {
   }
 
   let html = '';
-  if (lItems.length) html += `<div class="list-divider">💳 Кредиты (${lItems.length})</div>${lItems.map(loanRow).join('')}`;
-  if (eItems.length) html += `<div class="list-divider">🧾 Расходы</div>${eItems.map(expRow).join('')}`;
+  const eRecurring = eItems.filter(e=>!e.isOnetime);
+  const eOnetime   = eItems.filter(e=>e.isOnetime);
+  if (lItems.length)    html += `<div class="list-divider">💳 Кредиты (${lItems.length})</div>${lItems.map(loanRow).join('')}`;
+  if (eRecurring.length) html += `<div class="list-divider">🔄 Ежемесячные расходы</div>${eRecurring.map(expRow).join('')}`;
+  if (eOnetime.length)   html += `<div class="list-divider">1️⃣ Одноразовые расходы</div>${eOnetime.map(expRow).join('')}`;
   el.innerHTML = html;
 }
 
