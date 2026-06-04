@@ -498,9 +498,17 @@ function renderCalendar() {
     }
   }
   for (const e of expenses) {
-    if (!e.day) continue;
-    const d = Math.min(Number(e.day), dim);
-    (eMap[d] = eMap[d]||[]).push(e);
+    if (e.date) {
+      // Одноразовый: показываем только в нужном месяце
+      const ed = new Date(e.date);
+      if (ed.getFullYear()===viewYear && ed.getMonth()===viewMonth) {
+        const d = ed.getDate();
+        (eMap[d] = eMap[d]||[]).push(e);
+      }
+    } else if (e.day) {
+      const d = Math.min(Number(e.day), dim);
+      (eMap[d] = eMap[d]||[]).push(e);
+    }
   }
 
   let fdow = new Date(viewYear, viewMonth, 1).getDay();
