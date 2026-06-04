@@ -279,10 +279,25 @@
 <div class="modal-overlay hidden" id="expModal" onclick="closeModalOutside(event,'expModal')">
   <div class="modal">
     <h2 id="expModalTitle">Добавить расход</h2>
-    <div class="form-group"><label>Название</label><input type="text" id="eName" placeholder="Аренда, Netflix, Интернет..."></div>
+    <div class="form-group"><label>Название</label><input type="text" id="eName" placeholder="Аренда, Netflix, Командировка..."></div>
+    <!-- Тип расхода -->
+    <div class="form-group">
+      <label>Тип</label>
+      <div style="display:flex;gap:8px;">
+        <button type="button" id="typeRecurring" onclick="setExpType('recurring')"
+          style="flex:1;padding:9px;border-radius:10px;border:2px solid #6366f1;background:#f0f2ff;color:#6366f1;font-weight:700;cursor:pointer;font-size:0.82rem;">
+          🔄 Ежемесячный
+        </button>
+        <button type="button" id="typeOnetime" onclick="setExpType('onetime')"
+          style="flex:1;padding:9px;border-radius:10px;border:2px solid #e8e8f5;background:white;color:#a0a0c0;font-weight:700;cursor:pointer;font-size:0.82rem;">
+          1️⃣ Одноразовый
+        </button>
+      </div>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Сумма (₸)</label><input type="number" id="eAmount" placeholder="50 000"></div>
-      <div class="form-group"><label>День списания</label><input type="number" id="eDay" min="1" max="31" placeholder="1"></div>
+      <div class="form-group" id="eDayGroup"><label>День списания</label><input type="number" id="eDay" min="1" max="31" placeholder="1"></div>
+      <div class="form-group hidden" id="eDateGroup"><label>Дата</label><input type="date" id="eDate"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Иконка</label>
