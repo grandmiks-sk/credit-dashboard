@@ -80,8 +80,10 @@
   .pay-name-wrap { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
   .pay-date-lbl { font-size: 0.68rem; color: #a0a0c0; }
   .pay-amt { font-weight: 700; font-size: 0.83rem; }
-  .pay-toggle { background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 0 2px; opacity: .55; transition: opacity .15s; }
-  .pay-toggle:hover { opacity: 1; }
+  .pay-toggle { background: #f0f2ff; border: 1.5px solid #c7caff; cursor: pointer; font-size: 0.85rem; padding: 4px 8px; border-radius: 8px; color: #6366f1; font-weight: 600; transition: all .15s; white-space: nowrap; }
+  .pay-toggle:hover { background: #6366f1; color: white; border-color: #6366f1; }
+  .pay-toggle.paid-btn { background: #d1fae5; border-color: #6ee7b7; color: #059669; }
+  .pay-toggle.paid-btn:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
   .badge { font-size: 0.6rem; border-radius: 5px; padding: 1px 5px; font-weight: 600; }
   .badge-paid  { background: #d1fae5; color: #065f46; }
   .badge-soon  { background: #fef3c7; color: #92400e; }
