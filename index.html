@@ -715,11 +715,14 @@ function renderExpList() {
 
     el.innerHTML = expenses.map(e => {
       const col = e.color||'#f43f5e';
+      const meta = e.date
+        ? `1️⃣ ${new Date(e.date).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}`
+        : `🔄 ${e.day ? e.day+' числа' : 'ежемесячно'}`;
       return `<div class="exp-item" style="border-left:4px solid ${col};">
         <div class="exp-icon" style="background:${hex2rgba(col,.12)}">${e.emoji||'🧾'}</div>
         <div class="exp-info">
           <div class="exp-name">${e.name}</div>
-          <div class="exp-meta">${e.day ? e.day+' числа' : 'ежемесячно'}</div>
+          <div class="exp-meta">${meta}</div>
         </div>
         <div class="exp-amount" style="color:${col}">${fmt(e.amount)}</div>
         <div class="exp-actions">
