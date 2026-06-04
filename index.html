@@ -526,39 +526,65 @@ function renderCalendar() {
 
 /* ── MONTH LIST ── */
 function renderMonthList() {
-  const dim   = new Date(viewYear, viewMonth+1, 0).getDate();
   const today = new Date();
-
-  function enrich(item, isExp) {
-    const d = Math.min(Number(item.day||1), dim);
-    const dt = new Date(viewYear, viewMonth, d);
-    const paid = isPaid(item.id, viewYear, viewMonth);
-    const overdue = !paid && dt < today;
-    const daysUntil = Math.ceil((dt-today)/86400000);
-    const soon = !paid && daysUntil>=0 && daysUntil<=5;
-    return {...item, d, paid, overdue, soon, daysUntil, isExp, amt: Number(isExp ? item.amount : item.payment)};
-  }
-
-  const lItems = loans.filter(c=>c.day&&c.payment).map(c=>enrich(c,false)).sort((a,b)=>a.d-b.d);
-  const eItems = expenses.filter(e=>e.amount).map(e=>enrich(e,true)).sort((a,b)=>a.d-b.d);
-  const all = [...lItems, ...eItems];
-
   const el    = document.getElementById('monthPayments');
   const empty = document.getElementById('noPayments');
   const sub   = document.getElementById('paymentsSub');
 
+  // Кредиты — точные даты
+  const lItems = allLoanPaymentsInMonth(viewYear, viewMonth).map(p => {
+    const dt = new Date(p.payDate);
+    const paid = isPaid(p.paidKey,'','');
+    const overdue = !paid && dt < today;
+    const daysUntil = Math.ceil((dt - today) / 86400000);
+    const soon = !paid && daysUntil >= 0 && daysUntil <= 5;
+    return {...p, dt, paid, overdue, soon, daysUntil};
+  });
+
+  // Расходы — по дню месяца
+  const dim = new Date(viewYear, viewMonth+1, 0).getDate();
+  const eItems = expenses.filter(e=>e.amount).map(e => {
+    const d  = Math.min(Number(e.day||1), dim);
+    const dt = new Date(viewYear, viewMonth, d);
+    const k  = pKey(e.id, viewYear, viewMonth);
+    const paid = isPaid(k,'','');
+    const overdue = !paid && dt < today;
+    const daysUntil = Math.ceil((dt - today) / 86400000);
+    const soon = !paid && daysUntil >= 0 && daysUntil <= 5;
+    return {...e, dt, d, paid, overdue, soon, daysUntil, paidKey: k, payAmount: Number(e.amount)};
+  }).sort((a,b)=>a.d-b.d);
+
+  const all = [...lItems, ...eItems];
   if (all.length===0) { el.innerHTML=''; empty.classList.remove('hidden'); sub.textContent=''; return; }
   empty.classList.add('hidden');
 
-  const totalAmt = all.reduce((s,i)=>s+i.amt,0);
-  const paidAmt  = all.filter(i=>i.paid).reduce((s,i)=>s+i.amt,0);
+  const totalAmt = all.reduce((s,i)=>s+i.payAmount,0);
+  const paidAmt  = all.filter(i=>i.paid).reduce((s,i)=>s+i.payAmount,0);
   sub.textContent = `${fmt(paidAmt)} из ${fmt(totalAmt)}`;
 
-  function row(it) {
-    const col = it.color||(it.isExp?'#f43f5e':'#6366f1');
+  function loanRow(it) {
+    const col = it.color||'#6366f1';
+    const dayNum = it.dt.getDate();
     return `<li>
       <span class="pay-dot" style="background:${col}"></span>
-      <span style="font-size:.95rem;">${it.emoji||(it.isExp?'🧾':'💳')}</span>
+      <span style="font-size:.95rem;">${it.emoji||'💼'}</span>
+      <span class="pay-name-wrap">
+        <span style="font-weight:700;color:#1e1e3a;">${it.name}</span>
+        ${it.paid?'<span class="badge badge-paid">✓ оплачено</span>':''}
+        ${it.soon&&!it.paid?`<span class="badge badge-soon">через ${it.daysUntil}д</span>`:''}
+        ${it.overdue?'<span class="badge badge-overdue">просрочен</span>':''}
+        <span class="pay-date-lbl">${dayNum} числа</span>
+      </span>
+      <span class="pay-amt" style="color:${col}">${fmt(it.payAmount)}</span>
+      <button class="pay-toggle" onclick="togglePaid('${it.paidKey}')">${it.paid?'↩️':'✅'}</button>
+    </li>`;
+  }
+
+  function expRow(it) {
+    const col = it.color||'#f43f5e';
+    return `<li>
+      <span class="pay-dot" style="background:${col}"></span>
+      <span style="font-size:.95rem;">${it.emoji||'🧾'}</span>
       <span class="pay-name-wrap">
         <span style="font-weight:700;color:#1e1e3a;">${it.name}</span>
         ${it.paid?'<span class="badge badge-paid">✓ оплачено</span>':''}
@@ -566,14 +592,14 @@ function renderMonthList() {
         ${it.overdue?'<span class="badge badge-overdue">просрочен</span>':''}
         <span class="pay-date-lbl">${it.d} числа</span>
       </span>
-      <span class="pay-amt" style="color:${col}">${fmt(it.amt)}</span>
-      <button class="pay-toggle" onclick="togglePaid('${it.id}',${viewYear},${viewMonth})">${it.paid?'↩️':'✅'}</button>
+      <span class="pay-amt" style="color:${col}">${fmt(it.payAmount)}</span>
+      <button class="pay-toggle" onclick="toggleExpPaid('${it.id}',${viewYear},${viewMonth})">${it.paid?'↩️':'✅'}</button>
     </li>`;
   }
 
   let html = '';
-  if (lItems.length) html += `<div class="list-divider">💳 Кредиты</div>${lItems.map(row).join('')}`;
-  if (eItems.length) html += `<div class="list-divider">🧾 Расходы</div>${eItems.map(row).join('')}`;
+  if (lItems.length) html += `<div class="list-divider">💳 Кредиты (${lItems.length})</div>${lItems.map(loanRow).join('')}`;
+  if (eItems.length) html += `<div class="list-divider">🧾 Расходы</div>${eItems.map(expRow).join('')}`;
   el.innerHTML = html;
 }
 
