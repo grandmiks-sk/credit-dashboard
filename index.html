@@ -728,7 +728,7 @@ function changeMonth(d) {
 function monthName(m){return['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][m];}
 function plural(n,a,b,c){const r=n%100;if(r>=11&&r<=19)return c;switch(r%10){case 1:return a;case 2:case 3:case 4:return b;default:return c;}}
 
-render();
+loadData();
 </script>
 </body>
 </html>
