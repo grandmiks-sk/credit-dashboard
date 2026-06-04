@@ -386,17 +386,41 @@ function render() {
   renderExpList();
 }
 
+// Возвращает все платежи кредита в заданном месяце (из schedule)
+function loanPaymentsInMonth(loan, y, m) {
+  if (loan.schedule) {
+    return loan.schedule.filter(p => {
+      const d = new Date(p.date);
+      return d.getFullYear()===y && d.getMonth()===m;
+    });
+  }
+  // fallback для расходов (нет schedule)
+  return [];
+}
+
+// Все платежи кредитов в месяце
+function allLoanPaymentsInMonth(y, m) {
+  const result = [];
+  for (const loan of loans) {
+    for (const p of loanPaymentsInMonth(loan, y, m)) {
+      result.push({...loan, payDate: p.date, payAmount: p.amount,
+        paidKey: `${loan.id}-${p.date}`});
+    }
+  }
+  return result.sort((a,b)=>a.payDate.localeCompare(b.payDate));
+}
+
 /* ── CARDS ── */
 function renderCards() {
   const totalDebt     = loans.reduce((s,c)=>s+Number(c.balance),0);
   const totalOriginal = loans.reduce((s,c)=>s+Number(c.totalAmount||c.balance),0);
   const overallPct    = totalOriginal > 0 ? Math.round((1 - totalDebt/totalOriginal)*100) : 0;
-  const loanItems     = loans.filter(c=>c.day&&c.payment);
-  const totalLoans    = loanItems.reduce((s,c)=>s+Number(c.payment),0);
+  const loanPays      = allLoanPaymentsInMonth(viewYear, viewMonth);
+  const totalLoans    = loanPays.reduce((s,p)=>s+p.payAmount,0);
   const expItems      = expenses.filter(e=>e.amount);
   const totalExp      = expItems.reduce((s,e)=>s+Number(e.amount),0);
   const totalAll      = totalLoans + totalExp;
-  const paidLoans     = loanItems.filter(c=>isPaid(c.id,viewYear,viewMonth)).reduce((s,c)=>s+Number(c.payment),0);
+  const paidLoans     = loanPays.filter(p=>isPaid(p.paidKey,'','')).reduce((s,p)=>s+p.payAmount,0);
   const paidExp       = expItems.filter(e=>isPaid(e.id,viewYear,viewMonth)).reduce((s,e)=>s+Number(e.amount),0);
   const paidAll       = paidLoans + paidExp;
   const remaining     = totalAll - paidAll;
