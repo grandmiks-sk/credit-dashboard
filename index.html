@@ -426,7 +426,7 @@ function renderCards() {
   const totalExp      = expItems.reduce((s,e)=>s+Number(e.amount),0);
   const totalAll      = totalLoans + totalExp;
   const paidLoans     = loanPays.filter(p=>isPaid(p.paidKey,'','')).reduce((s,p)=>s+p.payAmount,0);
-  const paidExp       = expItems.filter(e=>isPaid(e.id,viewYear,viewMonth)).reduce((s,e)=>s+Number(e.amount),0);
+  const paidExp       = expItems.filter(e=>isPaid(pKey(e.id,viewYear,viewMonth),'','')).reduce((s,e)=>s+Number(e.amount),0);
   const paidAll       = paidLoans + paidExp;
   const remaining     = totalAll - paidAll;
 
